@@ -1,5 +1,7 @@
 import * as express from 'express';
-import { Routers } from './repository'
+import { Routers } from './router';
+import * as mongoose from 'mongoose';
+import { FisrtLoad } from './service/datosPrueba'
 
 let app = express();
 
@@ -11,4 +13,12 @@ app.use((req, res, next) => {
 });
 app.use("/", Routers(express.Router()));
 
-app.listen(5000)
+mongoose.connect('mongodb://localhost/Hoteles', { useMongoClient: true })
+let db = mongoose.connection;
+db.on("error", console.error.bind(console, 'connection error:'))
+db.once("open", () => {
+    FisrtLoad();
+    app.listen(3000, () => {
+        console.log("running in http://localhost:3000/")
+    })
+})
